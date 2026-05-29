@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이력서 작성기</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"맑은 고딕", sans-serif;
+    background:#f1f3f5;
+}
+
+.container{
+    display:flex;
+    gap:30px;
+    padding:20px;
+}
+
+.form-area{
+    width:35%;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-area h2{
+    margin-bottom:20px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+input,
+textarea{
+    width:100%;
+    padding:8px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+textarea{
+    resize:vertical;
+}
+
+.button-area{
+    margin-top:20px;
+}
+
+.button-area button{
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.preview-btn{
+    background:#007bff;
+    color:white;
+}
+
+.print-btn{
+    background:#28a745;
+    color:white;
+}
+
+.resume-area{
+    flex:1;
+    display:flex;
+    justify-content:center;
+}
+
+.resume{
+    width:210mm;
+    min-height:297mm;
+    background:white;
+    padding:15mm;
+    box-shadow:0 0 10px rgba(0,0,0,0.15);
+}
+
+.resume-title{
+    text-align:center;
+    font-size:32px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.profile{
+    display:flex;
+    margin-bottom:20px;
+}
+
+.photo{
+    width:120px;
+    height:150px;
+    border:1px solid #333;
+    margin-right:20px;
+    overflow:hidden;
+}
+
+.photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.info{
+    flex:1;
+}
+
+.info table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.info td{
+    border:1px solid #333;
+    padding:8px;
+}
+
+.section{
+    margin-top:20px;
+}
+
+.section h3{
+    background:#e9ecef;
+    padding:8px;
+    border:1px solid #333;
+}
+
+.section-content{
+    border:1px solid #333;
+    border-top:none;
+    padding:10px;
+    min-height:60px;
+    white-space:pre-wrap;
+}
+
+@media print{
+
+    .form-area,
+    .button-area{
+        display:none;
+    }
+
+    .container{
+        display:block;
+        padding:0;
+    }
+
+    .resume{
+        box-shadow:none;
+        margin:0;
+        width:100%;
+        min-height:auto;
+    }
+
+    @page{
+        size:A4;
+        margin:10mm;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- 입력 영역 -->
+    <div class="form-area">
+
+        <h2>이력서 정보 입력</h2>
+
+        <div class="form-group">
+            <label>증명사진</label>
+            <input type="file" id="photoInput" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label>이름</label>
+            <input type="text" id="name">
+        </div>
+
+        <div class="form-group">
+            <label>생년월일</label>
+            <input type="date" id="birth">
+        </div>
+
+        <div class="form-group">
+            <label>연락처</label>
+            <input type="text" id="phone">
+        </div>
+
+        <div class="form-group">
+            <label>이메일</label>
+            <input type="email" id="email">
+        </div>
+
+        <div class="form-group">
+            <label>주소</label>
+            <input type="text" id="address">
+        </div>
+
+        <div class="form-group">
+            <label>학력사항</label>
+            <textarea id="education" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>경력사항</label>
+            <textarea id="career" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>자격증</label>
+            <textarea id="license" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>보유기술</label>
+            <textarea id="skill" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>자기소개</label>
+            <textarea id="intro" rows="6"></textarea>
+        </div>
+
+        <div class="button-area">
+            <button class="preview-btn" onclick="previewResume()">
+                미리보기 갱신
+            </button>
+
+            <button class="print-btn" onclick="window.print()">
+                A4 인쇄
+            </button>
+        </div>
+
+    </div>
+
+    <!-- 이력서 미리보기 -->
+    <div class="resume-area">
+
+        <div class="resume">
+
+            <div class="resume-title">
+                이 력 서
+            </div>
+
+            <div class="profile">
+
+                <div class="photo">
+                    <img id="previewPhoto">
+                </div>
+
+                <div class="info">
+
+                    <table>
+
+                        <tr>
+                            <td width="120">이름</td>
+                            <td id="p_name"></td>
+                        </tr>
+
+                        <tr>
+                            <td>생년월일</td>
+                            <td id="p_birth"></td>
+                        </tr>
+
+                        <tr>
+                            <td>연락처</td>
+                            <td id="p_phone"></td>
+                        </tr>
+
+                        <tr>
+                            <td>이메일</td>
+                            <td id="p_email"></td>
+                        </tr>
+
+                        <tr>
+                            <td>주소</td>
+                            <td id="p_address"></td>
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="section">
+                <h3>학력사항</h3>
+                <div class="section-content" id="p_education"></div>
+            </div>
+
+            <div class="section">
+                <h3>경력사항</h3>
+                <div class="section-content" id="p_career"></div>
+            </div>
+
+            <div class="section">
+                <h3>자격증</h3>
+                <div class="section-content" id="p_license"></div>
+            </div>
+
+            <div class="section">
+                <h3>보유기술</h3>
+                <div class="section-content" id="p_skill"></div>
+            </div>
+
+            <div class="section">
+                <h3>자기소개</h3>
+                <div class="section-content" id="p_intro"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function previewResume(){
+
+    p_name.innerText = name.value;
+    p_birth.innerText = birth.value;
+    p_phone.innerText = phone.value;
+    p_email.innerText = email.value;
+    p_address.innerText = address.value;
+
+    p_education.innerText = education.value;
+    p_career.innerText = career.value;
+    p_license.innerText = license.value;
+    p_skill.innerText = skill.value;
+    p_intro.innerText = intro.value;
+}
+
+photoInput.addEventListener("change", function(){
+
+    const file = this.files[0];
+
+    if(file){
+
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+
+            document.getElementById("previewPhoto").src =
+            e.target.result;
+
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+});
+
+</script>
+
+</body>
+</html>
